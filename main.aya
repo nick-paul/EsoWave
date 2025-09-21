@@ -2,13 +2,16 @@
 	This main is a mess, I'm sorry.
 .}
 
+require canvas {canvas}
+import time
+require image {image}
 
-import ::canvas
-import ::time
-import "utils.fluid_logic"
-"utils.interactive_ui" importlib.import
-"config" importlib.import config .# execute config to load it
-"ui_setup" importlib.import ui_setup
+require ".utils/fluid_logic" {fluid_logic}
+require ".utils/interactive_ui" *
+require ".config" *
+require ".ui_setup" {_canvas ui}
+
+
 
 grid_size_x 2+ grid_size_y 2+ solver_iterations fluid_logic! :fluid;
 
@@ -33,7 +36,7 @@ grid_size_y 2+ 2/ :center;
 	
 	[ [size_x.R {:&} size_y 1-%]   [size_y.R {:&} size_x 1-%].T   densities ]
 	.T:#{.T:#{~ :d; :y; :x;
-		d.| cur_d_max/ 255* 255.> :& :& _canvas.id:{graphics.set_color}
+		d.| cur_d_max/ 255* 255.> :& :& _canvas.id:(graphics.set_color)
 		x pixel_size* y pixel_size* pixel_size pixel_size _canvas.fillrect
 	}};
 }:draw_density_gray;
@@ -51,7 +54,7 @@ grid_size_y 2+ 2/ :center;
 
 	[ [size_x.R {:&} size_y 1-%]   [size_y.R {:&} size_x 1-%].T   densities velocity_x velocity_y ]
 	.T:#{.T:#{~ :vy; :vx; :d; :y; :x;
-		vx.| cur_vx_max/ 255* 255.> vy.| cur_vy_max/ 255* 255.> d.| cur_d_max/ 255* 255.> _canvas.id:{graphics.set_color}
+		vx.| cur_vx_max/ 255* 255.> vy.| cur_vy_max/ 255* 255.> d.| cur_d_max/ 255* 255.> _canvas.id:(graphics.set_color)
 		x pixel_size * y pixel_size * pixel_size pixel_size _canvas.fillrect
 	}};
 }:draw_all;
@@ -67,7 +70,7 @@ grid_size_y 2+ 2/ :center;
 	
 	[ [size_x.R {:&} size_y 1-%]   [size_y.R {:&} size_x 1-%].T   velocity_x velocity_y ]
 	.T:#{.T:#{~ :vy; :vx; :y; :x;
-		vx.| cur_vx_max/ 255* 255.> vy.| cur_vy_max/ 255* 255.> 0 _canvas.id:{graphics.set_color}
+		vx.| cur_vx_max/ 255* 255.> vy.| cur_vy_max/ 255* 255.> 0 _canvas.id:(graphics.set_color)
 		x pixel_size * y pixel_size * pixel_size pixel_size _canvas.fillrect
 	}};
 }:draw_velocity_abs;
@@ -86,13 +89,13 @@ M$ :prev_time;
 	M$ :cur_time;
 	cur_time prev_time - :delta_ms;
 
-	_canvas.id :{graphics.click_events} :events;
+	_canvas.id :(graphics.click_events) :events;
 	events ui.check_buttons
 	
-	_canvas.id :{graphics.move_events} :move_events;
+	_canvas.id :(graphics.move_events) :move_events;
 	
 	.# if left-click is down, handle move events as dragging
-	_canvas.id :{graphics.pressed_buttons} 1 N 0<! :left_click_held; ;
+	_canvas.id :(graphics.pressed_buttons) 1 N 0<! :left_click_held; ;
 	move_events E 0> {
 		left_click_held {
 			delta_ms move_events E / :move_dt;

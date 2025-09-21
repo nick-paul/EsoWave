@@ -1,5 +1,3 @@
-export ::fluid_logic
-
 class fluid_logic
 
 	.{==========================

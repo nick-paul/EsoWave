@@ -1,7 +1,5 @@
-import ::canvas
+require canvas {canvas}
 
-export ::ui_style
-export ::interactive_ui
 
 class ui_style
 	.# ui_style constructor taking the following optional parameters as a dictionary
@@ -10,7 +8,7 @@ class ui_style
 	.#   'size' -> size for the font
 	.#   'r' 'g' 'b' 'a' -> rgba values [0,255] to use as text color
 	def ui_style::__init__ {params::dict self,
-		{, .# default parameters
+		:{  .# default parameters
 			"Arial" :font
 			"bold" :style
 			15 :size
@@ -31,8 +29,8 @@ class ui_style
 	
 	.# load the style defined by this ui_style to the canvas
 	def ui_style::load_style {_canvas self,
-		self.r self.g self.b {self.a 255 /}~ _canvas.id :{graphics.set_color_alpha}
-		self.font self.style self.size _canvas.id :{graphics.set_font}
+		self.r self.g self.b {self.a 255 /}~ _canvas.id :(graphics.set_color_alpha)
+		self.font self.style self.size _canvas.id :(graphics.set_font)
 	}
 
 
@@ -51,12 +49,12 @@ class interactive_ui
 		width self.:width;
 		height self.:height;
 		_canvas self.:_canvas;
-		[] self.:_active_buttons; .# entries are dict {, action::block xs::num ys::num xe::num ye::num}
+		[] self.:_active_buttons; .# entries are dict :{ action::block xs::num ys::num xe::num ye::num}
 		
-		{,30:size}ui_style! self.:header_style;
-		{,20:size 230:r 230:g 230:b}ui_style! self.:button_label_style;
-		{,20:size 89:r 57:g 89:b}ui_style! self.:button_bg_style;
-		{,20:size 66:r 42:g 66:b}ui_style! self.:button_border_style;
+		:{30:size}ui_style! self.:header_style;
+		:{20:size 230:r 230:g 230:b}ui_style! self.:button_label_style;
+		:{20:size 89:r 57:g 89:b}ui_style! self.:button_bg_style;
+		:{20:size 66:r 42:g 66:b}ui_style! self.:button_border_style;
 	}
 	
 	def interactive_ui::set_header_style {style::ui_style self,
@@ -71,20 +69,20 @@ class interactive_ui
 	
 	def interactive_ui::header {text x y self,
 		_canvas self.header_style.load_style
-		text x self.x + y self.y + _canvas.id :{graphics.text}
+		text x self.x + y self.y + _canvas.id :(graphics.text)
 	}
 	
 	def interactive_ui::button {label label_offset_x label_offset_y x y width height arc_radius on_click::block self,
 		_canvas self.button_border_style.load_style
-		x self.x + y self.y + width height arc_radius :& 1 _canvas.id :{graphics.round_rect}
+		x self.x + y self.y + width height arc_radius :& 1 _canvas.id :(graphics.round_rect)
 		_canvas self.button_bg_style.load_style
-		x self.x+2+ y self.y+2+ width 4- height 4- arc_radius :& 1 _canvas.id :{graphics.round_rect}
+		x self.x+2+ y self.y+2+ width 4- height 4- arc_radius :& 1 _canvas.id :(graphics.round_rect)
 		
 		_canvas self.button_label_style.load_style
 		height self.button_label_style.size - 0.5* self.button_label_style.size+ :offset_y;
-		label x self.x+label_offset_x+ y self.y+offset_y+label_offset_y+ _canvas.id :{graphics.text}
+		label x self.x+label_offset_x+ y self.y+offset_y+label_offset_y+ _canvas.id :(graphics.text)
 		
-		{,
+		:{
 			on_click.`:action
 			x self.x+ :xs
 			x self.x+width+ :xe
